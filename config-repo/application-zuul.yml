@@ -22,6 +22,8 @@ eureka:
 #路由响应出现连接超时，ReadTimeout<timeoutInMilliseconds 会自动进行重试路由请求
 #retryable 可以关闭重试
 ribbon:
+  eureka:
+    enabled: true
   ConnectTimeout: 15000
   ReadTimeout: 30000
 
