@@ -1,0 +1,71 @@
+spring:
+  application:
+    name: zuul-server
+
+server:
+  port: 80
+
+eureka:
+  instance:
+    instance-id: ${spring.cloud.client.ipAddress}:${server.port}
+    prefer-ip-address: true
+    hostname: ${spring.cloud.client.ipAddress}
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
+  client:
+    healthcheck.enabled: true
+    serviceUrl:
+      defaultZone: http://192.168.27.31:1111/eureka/,http://192.168.27.32:1112/eureka/
+
+#Hystrix 和 Ribbon 支持  
+#路由请求出现连接超时，ConnectTimeout<timeoutInMilliseconds 会自动进行重试路由请求
+#路由响应出现连接超时，ReadTimeout<timeoutInMilliseconds 会自动进行重试路由请求
+#retryable 可以关闭重试
+ribbon:
+  ConnectTimeout: 15000
+  ReadTimeout: 30000
+
+hystrix:
+  command:
+    default:
+      execution:
+        timeout:
+          enabled: true
+      isolation:
+        thread:
+          timeoutInMilliseconds: 30000
+
+#传统路由方式
+#zuul:
+#  routes:
+#    api-a-url:
+#      path: /api-a-url/**
+#      url: http://localhost:8080/
+
+#面向服务的路由
+#sensitiveHeaders  Cookie与头信息 Cookie在 SpringCloud Zuul网关 中默认是不会传递 的 
+#sensitiveHeaders 设置为空  利于Spring Security、 Shiro等安全框架构建
+#可以通过网关访问登录页面并发起登录请求， 但是登录成功之后， 
+#我们跳转到的页面URL却是 具体Web应用实例的地址， 而不是
+#通过网关的路由地址   addHostHeader
+zuul:
+#  prefix: /cyl
+#  stripPrefix: false
+  ignored-services: '*'
+  addHostHeader: true
+  routes:
+    api-a:
+      path: /hello-service/**
+      serviceId: hello-service
+      retryable: false
+    api-b:
+      customSensitiveHeaders: true
+      sensitiveHeaders: 
+      path: /hello-customer/**
+      serviceId: hello-customer
+
+#zuul.<SimpleClassName>.<filterType>.disable = true
+#禁用指定的过滤器   <SimpleClassName>代表过滤器的类名
+
+
+
