@@ -15,7 +15,7 @@ eureka:
   client:
     healthcheck.enabled: true
     serviceUrl:
-      defaultZone: http://192.168.27.31:1111/eureka/,http://192.168.27.32:1112/eureka/
+      defaultZone: http://192.168.27.31:1111/eureka/,http://192.168.27.32:1111/eureka/
 
 #Hystrix 和 Ribbon 支持  
 #路由请求出现连接超时，ConnectTimeout<timeoutInMilliseconds 会自动进行重试路由请求
